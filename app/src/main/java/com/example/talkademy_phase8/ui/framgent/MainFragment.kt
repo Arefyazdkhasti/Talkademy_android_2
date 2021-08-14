@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
 import com.example.talkademy_phase8.R
+import com.example.talkademy_phase8.data.Student
 import com.example.talkademy_phase8.databinding.FragmentMainBinding
+import com.example.talkademy_phase8.util.Gender
 
 class MainFragment : Fragment() {
 
@@ -31,7 +33,7 @@ class MainFragment : Fragment() {
 
     private fun bindUI() {
         binding.addStudentBtn.setOnClickListener {
-            val action = MainFragmentDirections.addStudnet()
+            val action = MainFragmentDirections.addStudent(null)
             Navigation.findNavController(requireActivity(), R.id.add_student_btn)
                 .navigate(action)
         }

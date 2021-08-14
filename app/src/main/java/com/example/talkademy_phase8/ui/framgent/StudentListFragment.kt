@@ -1,60 +1,137 @@
 package com.example.talkademy_phase8.ui.framgent
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.talkademy_phase8.R
+import com.example.talkademy_phase8.data.Student
+import com.example.talkademy_phase8.data.local.StudentDao
+import com.example.talkademy_phase8.data.local.StudentDataBase
+import com.example.talkademy_phase8.databinding.FragmentStudentListBinding
+import com.example.talkademy_phase8.ui.adapter.StudentAdapter
+import com.example.talkademy_phase8.util.Gender
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [StudentListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class StudentListFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentStudentListBinding? = null
+    private val binding
+        get() = _binding!!
+
+    private var studentList = listOf<Student>()
+    private var currentFilter= 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_student_list, container, false)
+    ): View {
+        _binding = FragmentStudentListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment StudentListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            StudentListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
+    }
+
+    private fun bindUI() {
+        val studentDatabase = StudentDataBase
+        val dao = studentDatabase.getDatabase(requireContext())
+
+        GlobalScope.launch {
+            setUpRecycler(dao.studentDao().getAllStudents())
+        }
+
+        binding.filterFab.setOnClickListener {
+            showFilterDialog(dao)
+        }
+    }
+
+    private fun setUpRecycler(studentList: List<Student>) {
+        val studentAdapter = StudentAdapter(requireContext())
+        studentAdapter.setStudents(studentList)
+        requireActivity().runOnUiThread {
+            binding.studentsRecyclerView.apply {
+                println(studentAdapter.itemCount)
+                adapter = studentAdapter
+                layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            }
+        }
+    }
+
+    private fun showFilterDialog(dao: StudentDataBase) {
+        val singleItems = arrayOf("All", "Male", "Female", "Score", "Name", "Family", "Gender")
+        val checkedItem = currentFilter
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Filter")
+            .setNeutralButton("cancel") { dialog, which ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("OK") { dialog, which ->
+                dialog.dismiss()
+            }
+            // Single-choice items (initialized with checked item)
+            .setSingleChoiceItems(singleItems, checkedItem) { dialog, which ->
+                selectedFilter(singleItems[which], dao)
+                currentFilter = which
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun selectedFilter(result: String, dao: StudentDataBase) {
+        when (result) {
+            "ALl" -> {
+                GlobalScope.launch {
+                    setUpRecycler(dao.studentDao().getAllStudents())
                 }
             }
+            "Male" -> {
+                GlobalScope.launch {
+                    setUpRecycler(dao.studentDao().getStudentsByGender(Gender.MALE))
+                }
+            }
+            "Female" -> {
+                GlobalScope.launch {
+                    setUpRecycler(dao.studentDao().getStudentsByGender(Gender.FEMALE))
+                }
+            }
+            "Score" -> {
+                GlobalScope.launch {
+                    setUpRecycler(dao.studentDao().getStudentsSortByScore())
+                }
+            }
+            "Name" -> {
+                GlobalScope.launch {
+                    setUpRecycler(dao.studentDao().getStudentsSortByName())
+                }
+            }
+            "Family" -> {
+                GlobalScope.launch {
+                    setUpRecycler(dao.studentDao().getStudentsSortByFamily())
+                }
+            }
+            "Gender" -> {
+                GlobalScope.launch {
+                    setUpRecycler(
+                        dao.studentDao().getStudentsByGender(Gender.FEMALE) + dao.studentDao()
+                            .getStudentsByGender(Gender.MALE)
+                    )
+                }
+            }
+        }
     }
+
 }
