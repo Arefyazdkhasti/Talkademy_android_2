@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Talkademy_phase8</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_student">Add Student</string>
+    <string name="show_student">Show Student</string>
+    <string name="score">Score</string>
+    <string name="national_code">National Code</string>
+    <string name="family">Family</string>
+    <string name="name">Name</string>
+    <string name="female">female</string>
+    <string name="male">male</string>
+    <string name="save">Save</string>
 </resources>
