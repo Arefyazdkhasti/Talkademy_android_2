@@ -28,8 +28,7 @@ class StudentListFragment : Fragment() {
     private val binding
         get() = _binding!!
 
-    private var studentList = listOf<Student>()
-    private var currentFilter= 0
+    private var currentFilter = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,7 +48,7 @@ class StudentListFragment : Fragment() {
         val dao = studentDatabase.getDatabase(requireContext())
 
         GlobalScope.launch {
-            setUpRecycler(dao.studentDao().getAllStudents())
+            setUpRecycler((dao.studentDao().getAllStudents()))
         }
 
         binding.filterFab.setOnClickListener {
@@ -94,43 +93,34 @@ class StudentListFragment : Fragment() {
     private fun selectedFilter(result: String, dao: StudentDataBase) {
         when (result) {
             "ALl" -> {
-                GlobalScope.launch {
-                    setUpRecycler(dao.studentDao().getAllStudents())
-                }
+                updateView(dao.studentDao().getAllStudents())
             }
             "Male" -> {
-                GlobalScope.launch {
-                    setUpRecycler(dao.studentDao().getStudentsByGender(Gender.MALE))
-                }
+                updateView(dao.studentDao().getStudentsByGender(Gender.MALE))
             }
             "Female" -> {
-                GlobalScope.launch {
-                    setUpRecycler(dao.studentDao().getStudentsByGender(Gender.FEMALE))
-                }
+                updateView(dao.studentDao().getStudentsByGender(Gender.FEMALE))
             }
             "Score" -> {
-                GlobalScope.launch {
-                    setUpRecycler(dao.studentDao().getStudentsSortByScore())
-                }
+                updateView(dao.studentDao().getStudentsSortByScore())
             }
             "Name" -> {
-                GlobalScope.launch {
-                    setUpRecycler(dao.studentDao().getStudentsSortByName())
-                }
+                updateView(dao.studentDao().getStudentsSortByName())
             }
             "Family" -> {
-                GlobalScope.launch {
-                    setUpRecycler(dao.studentDao().getStudentsSortByFamily())
-                }
+                updateView(dao.studentDao().getStudentsSortByFamily())
             }
             "Gender" -> {
-                GlobalScope.launch {
-                    setUpRecycler(
-                        dao.studentDao().getStudentsByGender(Gender.FEMALE) + dao.studentDao()
-                            .getStudentsByGender(Gender.MALE)
-                    )
-                }
+                updateView(dao.studentDao().getStudentsByGender(Gender.FEMALE) + dao.studentDao().getStudentsByGender(Gender.MALE))
             }
+        }
+    }
+
+    private fun updateView(list: List<Student>) {
+        GlobalScope.launch {
+            setUpRecycler(
+                list
+            )
         }
     }
 

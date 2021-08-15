@@ -7,7 +7,7 @@ import com.example.talkademy_phase8.util.Gender
 @Dao
 interface StudentDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(student: Student)
 
     @Update

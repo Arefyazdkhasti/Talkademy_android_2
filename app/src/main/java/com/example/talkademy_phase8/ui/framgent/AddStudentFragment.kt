@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.talkademy_phase8.R
 import com.example.talkademy_phase8.data.Student
+import com.example.talkademy_phase8.data.local.DataBaseOpenHelper
 import com.example.talkademy_phase8.data.local.StudentDao
 import com.example.talkademy_phase8.data.local.StudentDataBase
 import com.example.talkademy_phase8.databinding.FragmentAddStudentBinding
@@ -68,6 +69,7 @@ class AddStudentFragment : Fragment() {
     private fun bindUI(isLoaded: Boolean) {
         val studentDatabase = StudentDataBase
         val dao = studentDatabase.getDatabase(requireContext())
+        val openHelper = DataBaseOpenHelper(requireContext())
 
         binding.saveBtn.setOnClickListener {
 
@@ -80,6 +82,10 @@ class AddStudentFragment : Fragment() {
 
             if (name.isNotEmpty() and family.isNotEmpty() and nationalCode.isNotEmpty() and score.isNotEmpty()) {
                 val student = Student(name, family, nationalCode, score, gender)
+
+                /*println("sq fucking lite -> ${openHelper.addStudent(student)}")
+                println(openHelper.checkStudentExists(student.nationalCode))
+                println(openHelper.getAllStudents().toString())*/
 
                 if (isLoaded){
                     GlobalScope.launch {
