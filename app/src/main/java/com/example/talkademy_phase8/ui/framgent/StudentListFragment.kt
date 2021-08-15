@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.talkademy_phase8.R
 import com.example.talkademy_phase8.data.Student
+import com.example.talkademy_phase8.data.local.DataBaseOpenHelper
 import com.example.talkademy_phase8.data.local.StudentDao
 import com.example.talkademy_phase8.data.local.StudentDataBase
 import com.example.talkademy_phase8.databinding.FragmentStudentListBinding
@@ -21,6 +22,15 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
+//filters
+private const val ALL = "all"
+private const val MALE = "male"
+private const val FEMALE = "female"
+private const val SCORE = "score"
+private const val NAME = "name"
+private const val FAMILY = "family"
+private const val GENDER = "gender"
 
 class StudentListFragment : Fragment() {
 
@@ -44,20 +54,24 @@ class StudentListFragment : Fragment() {
     }
 
     private fun bindUI() {
-        val studentDatabase = StudentDataBase
-        val dao = studentDatabase.getDatabase(requireContext())
+        //val studentDatabase = StudentDataBase
+        //val dao = studentDatabase.getDatabase(requireContext())
+        val dataBaseOpenHelper = DataBaseOpenHelper(requireContext())
 
-        GlobalScope.launch {
+        setUpRecycler(dataBaseOpenHelper.getAllStudents())
+
+        /*GlobalScope.launch {
             setUpRecycler((dao.studentDao().getAllStudents()))
-        }
+        }*/
+
 
         binding.filterFab.setOnClickListener {
-            showFilterDialog(dao)
+            showFilterDialog(dataBaseOpenHelper)
         }
     }
 
     private fun setUpRecycler(studentList: List<Student>) {
-        val studentAdapter = StudentAdapter(requireContext())
+        val studentAdapter = StudentAdapter()
         studentAdapter.setStudents(studentList)
         requireActivity().runOnUiThread {
             binding.studentsRecyclerView.apply {
@@ -69,8 +83,8 @@ class StudentListFragment : Fragment() {
         }
     }
 
-    private fun showFilterDialog(dao: StudentDataBase) {
-        val singleItems = arrayOf("All", "Male", "Female", "Score", "Name", "Family", "Gender")
+    private fun showFilterDialog(dataBaseOpenHelper: DataBaseOpenHelper) {
+        val singleItems = arrayOf(ALL, MALE, FEMALE, SCORE, NAME, FAMILY, GENDER)
         val checkedItem = currentFilter
 
         MaterialAlertDialogBuilder(requireContext())
@@ -81,16 +95,31 @@ class StudentListFragment : Fragment() {
             .setPositiveButton("OK") { dialog, which ->
                 dialog.dismiss()
             }
-            // Single-choice items (initialized with checked item)
             .setSingleChoiceItems(singleItems, checkedItem) { dialog, which ->
-                selectedFilter(singleItems[which], dao)
+                //selectedFilter(singleItems[which], dao)
+                applyFilters(singleItems[which], dataBaseOpenHelper)
                 currentFilter = which
                 dialog.dismiss()
             }
             .show()
     }
 
-    private fun selectedFilter(result: String, dao: StudentDataBase) {
+    private fun applyFilters(result: String, dataBaseOpenHelper: DataBaseOpenHelper) {
+        when (result) {
+            ALL -> setUpRecycler(dataBaseOpenHelper.getAllStudents())
+            MALE -> setUpRecycler(dataBaseOpenHelper.getStudentsByGender(Gender.MALE))
+            FEMALE -> setUpRecycler(dataBaseOpenHelper.getStudentsByGender(Gender.FEMALE))
+            SCORE -> setUpRecycler(dataBaseOpenHelper.getStudentsByScoreOrder())
+            NAME -> setUpRecycler(dataBaseOpenHelper.getStudentsByNameOrder())
+            FAMILY -> setUpRecycler(dataBaseOpenHelper.getStudentsByFamilyOrder())
+            GENDER -> setUpRecycler(
+                dataBaseOpenHelper.getStudentsByGender(Gender.FEMALE) +
+                dataBaseOpenHelper.getStudentsByGender(Gender.MALE)
+            )
+        }
+    }
+    //region room filter implementation
+    /*private fun selectedFilter(, dao: StudentDataBase) {
         when (result) {
             "ALl" -> {
                 updateView(dao.studentDao().getAllStudents())
@@ -122,6 +151,6 @@ class StudentListFragment : Fragment() {
                 list
             )
         }
-    }
-
+    }*/
+    //endregion
 }

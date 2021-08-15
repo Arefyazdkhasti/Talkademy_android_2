@@ -18,6 +18,7 @@ import com.example.talkademy_phase8.data.local.StudentDataBase
 import com.example.talkademy_phase8.databinding.FragmentAddStudentBinding
 import com.example.talkademy_phase8.databinding.FragmentMainBinding
 import com.example.talkademy_phase8.util.Gender
+import com.example.talkademy_phase8.util.UiUtil.Companion.showToast
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -46,7 +47,7 @@ class AddStudentFragment : Fragment() {
             bindStudent(student)
             bindUI(true)
             (activity as? AppCompatActivity)?.supportActionBar?.title = "Update Student"
-        }else{
+        } else {
             bindUI(false)
         }
     }
@@ -67,8 +68,8 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun bindUI(isLoaded: Boolean) {
-        val studentDatabase = StudentDataBase
-        val dao = studentDatabase.getDatabase(requireContext())
+        //val studentDatabase = StudentDataBase
+        //val dao = studentDatabase.getDatabase(requireContext())
         val openHelper = DataBaseOpenHelper(requireContext())
 
         binding.saveBtn.setOnClickListener {
@@ -83,11 +84,32 @@ class AddStudentFragment : Fragment() {
             if (name.isNotEmpty() and family.isNotEmpty() and nationalCode.isNotEmpty() and score.isNotEmpty()) {
                 val student = Student(name, family, nationalCode, score, gender)
 
-                /*println("sq fucking lite -> ${openHelper.addStudent(student)}")
-                println(openHelper.checkStudentExists(student.nationalCode))
-                println(openHelper.getAllStudents().toString())*/
+                if (isLoaded) { //update student
 
-                if (isLoaded){
+                    if (openHelper.updateStudent(student) != 0) {
+                        showToast(requireContext(), "${student.name} ${student.family} updated!")
+                    }else
+                        showToast(requireContext(), "Error in updating student")
+
+
+                } else { //store new student
+
+                    if (!openHelper.checkStudentExists(student.nationalCode)) {
+                        if (openHelper.addStudent(student) != 0.toLong())
+                            showToast(requireContext(), "${student.name} ${student.family} added!")
+                        else
+                            showToast(requireContext(), "Error in adding student")
+                    } else {
+                        showToast(
+                            requireContext(),
+                            "Student already existed with this National Code!"
+                        )
+                    }
+                }
+
+
+                //Room implementation
+                /*if (isLoaded){
                     GlobalScope.launch {
                         dao.studentDao().update(student)
                     }
@@ -97,18 +119,11 @@ class AddStudentFragment : Fragment() {
                         dao.studentDao().insert(student)
                     }
                     showToast("${student.name} ${student.family} added!")
-                }
+                }*/
 
-            } else Toast.makeText(requireContext(), "fill all parts!", Toast.LENGTH_SHORT).show()
+            } else showToast(requireContext(), "fill all parts!")
         }
     }
 
-    private fun showToast(text:String){
-        Toast.makeText(
-            requireContext(),
-            text,
-            Toast.LENGTH_SHORT
-        ).show()
-    }
 
 }

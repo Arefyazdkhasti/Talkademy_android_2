@@ -9,17 +9,17 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.talkademy_phase8.R
 import com.example.talkademy_phase8.data.Student
+import com.example.talkademy_phase8.data.local.DataBaseOpenHelper
 import com.example.talkademy_phase8.data.local.StudentDataBase
 import com.example.talkademy_phase8.databinding.StudentItemBinding
 import com.example.talkademy_phase8.ui.framgent.StudentListFragmentDirections
 import com.example.talkademy_phase8.util.Gender
+import com.example.talkademy_phase8.util.UiUtil.Companion.showToast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class StudentAdapter(
-    private val context: Context
-) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
+class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
     private val students = ArrayList<Student>()
 
@@ -36,7 +36,7 @@ class StudentAdapter(
     }
 
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
-        holder.bind(students[position],position)
+        holder.bind(students[position])
     }
 
     override fun getItemCount(): Int = students.size
@@ -46,7 +46,7 @@ class StudentAdapter(
         private val binding: StudentItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(student: Student,position: Int) {
+        fun bind(student: Student) {
             binding.studentName.text = student.name
             binding.studentFamily.text = student.family
             binding.studentScore.text = student.score
@@ -59,13 +59,13 @@ class StudentAdapter(
 
 
             itemView.setOnLongClickListener {
-                showDialog(student,position)
+                showDialog(student,adapterPosition ,itemView.context)
                 return@setOnLongClickListener (true)
             }
         }
     }
 
-    private fun showDialog(student: Student,position: Int) {
+    private fun showDialog(student: Student,position: Int,context: Context) {
         MaterialAlertDialogBuilder(context)
             .setTitle("${student.name} ${student.family}")
             .setMessage("Choose action to do with selected student")
@@ -73,14 +73,21 @@ class StudentAdapter(
                 dialog.dismiss()
             }
             .setNegativeButton("Delete") { dialog, which ->
-                val studentDatabase = StudentDataBase
-                val dao = studentDatabase.getDatabase(context)
-
-                GlobalScope.launch {
+                //val studentDatabase = StudentDataBase
+                //val dao = studentDatabase.getDatabase(context)
+                /*GlobalScope.launch {
                     dao.studentDao().delete(student)
-                }
-                Toast.makeText(context, "${student.name} deleted!", Toast.LENGTH_SHORT).show()
+                }*/
+
+                val openHelper = DataBaseOpenHelper(context)
+
+                openHelper.deleteEmployee(student)
+                showToast(context, "${student.name} deleted!")
+                students.removeAt(position)
+                //update list and remove item
                 notifyItemRemoved(position)
+                notifyItemRangeChanged(position,students.size)
+
             }
             .setPositiveButton("Edit") { dialog, which ->
                 val action = StudentListFragmentDirections.editStudent(student)
