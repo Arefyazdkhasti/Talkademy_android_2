@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'androidx.navigation.safeargs'
+    id 'realm-android'
 }
 
 android {
@@ -37,6 +38,9 @@ android {
         viewBinding = true
     }
 
+    realm {
+        syncEnabled = true
+    }
 }
 
 dependencies {
@@ -61,6 +65,8 @@ dependencies {
     implementation "androidx.room:room-runtime:2.3.0"
     kapt "androidx.room:room-compiler:2.3.0"
     implementation "androidx.room:room-ktx:2.3.0"
+
+    //Realm
 
 
 }
