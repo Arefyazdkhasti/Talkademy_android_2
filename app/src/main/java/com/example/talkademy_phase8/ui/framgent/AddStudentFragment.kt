@@ -1,26 +1,16 @@
 package com.example.talkademy_phase8.ui.framgent
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import com.example.talkademy_phase8.R
-import com.example.talkademy_phase8.data.Student
-import com.example.talkademy_phase8.data.local.DataBaseOpenHelper
-import com.example.talkademy_phase8.data.local.StudentDao
-import com.example.talkademy_phase8.data.local.StudentDataBase
+import com.example.talkademy_phase8.data.entity.Student
+import com.example.talkademy_phase8.data.local.SQLite.DataBaseOpenHelper
 import com.example.talkademy_phase8.databinding.FragmentAddStudentBinding
-import com.example.talkademy_phase8.databinding.FragmentMainBinding
 import com.example.talkademy_phase8.util.Gender
 import com.example.talkademy_phase8.util.UiUtil.Companion.showToast
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 class AddStudentFragment : Fragment() {

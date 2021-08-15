@@ -1,4 +1,4 @@
-package com.example.talkademy_phase8.data
+package com.example.talkademy_phase8.data.entity
 
 import android.os.Parcelable
 import androidx.room.Entity

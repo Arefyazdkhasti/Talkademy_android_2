@@ -1,7 +1,7 @@
-package com.example.talkademy_phase8.data.local
+package com.example.talkademy_phase8.data.local.room
 
 import androidx.room.*
-import com.example.talkademy_phase8.data.Student
+import com.example.talkademy_phase8.data.entity.Student
 import com.example.talkademy_phase8.util.Gender
 
 @Dao

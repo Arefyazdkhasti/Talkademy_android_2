@@ -7,9 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
 import com.example.talkademy_phase8.R
-import com.example.talkademy_phase8.data.Student
 import com.example.talkademy_phase8.databinding.FragmentMainBinding
-import com.example.talkademy_phase8.util.Gender
 
 class MainFragment : Fragment() {
 

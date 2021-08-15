@@ -1,27 +1,17 @@
 package com.example.talkademy_phase8.ui.framgent
 
-import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.talkademy_phase8.R
-import com.example.talkademy_phase8.data.Student
-import com.example.talkademy_phase8.data.local.DataBaseOpenHelper
-import com.example.talkademy_phase8.data.local.StudentDao
-import com.example.talkademy_phase8.data.local.StudentDataBase
+import com.example.talkademy_phase8.data.entity.Student
+import com.example.talkademy_phase8.data.local.SQLite.DataBaseOpenHelper
 import com.example.talkademy_phase8.databinding.FragmentStudentListBinding
 import com.example.talkademy_phase8.ui.adapter.StudentAdapter
 import com.example.talkademy_phase8.util.Gender
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 //filters
 private const val ALL = "all"

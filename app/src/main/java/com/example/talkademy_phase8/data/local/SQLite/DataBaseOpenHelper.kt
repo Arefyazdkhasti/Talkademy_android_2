@@ -1,4 +1,4 @@
-package com.example.talkademy_phase8.data.local
+package com.example.talkademy_phase8.data.local.SQLite
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
@@ -7,7 +7,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.talkademy_phase8.data.Student
+import com.example.talkademy_phase8.data.entity.Student
 import com.example.talkademy_phase8.util.Gender
 
 @SuppressLint("Recycle")

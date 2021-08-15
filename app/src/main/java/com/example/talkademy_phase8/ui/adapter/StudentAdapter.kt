@@ -4,20 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.talkademy_phase8.R
-import com.example.talkademy_phase8.data.Student
-import com.example.talkademy_phase8.data.local.DataBaseOpenHelper
-import com.example.talkademy_phase8.data.local.StudentDataBase
+import com.example.talkademy_phase8.data.entity.Student
+import com.example.talkademy_phase8.data.local.SQLite.DataBaseOpenHelper
 import com.example.talkademy_phase8.databinding.StudentItemBinding
 import com.example.talkademy_phase8.ui.framgent.StudentListFragmentDirections
 import com.example.talkademy_phase8.util.Gender
 import com.example.talkademy_phase8.util.UiUtil.Companion.showToast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
@@ -65,7 +61,7 @@ class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(
         }
     }
 
-    private fun showDialog(student: Student,position: Int,context: Context) {
+    private fun showDialog(student: Student, position: Int, context: Context) {
         MaterialAlertDialogBuilder(context)
             .setTitle("${student.name} ${student.family}")
             .setMessage("Choose action to do with selected student")
