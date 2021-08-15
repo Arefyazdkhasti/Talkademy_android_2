@@ -1,13 +1,13 @@
 package com.example.talkademy_phase8.data.local.room
 
-import androidx.room.*
+//import androidx.room.*
 import com.example.talkademy_phase8.data.entity.Student
 import com.example.talkademy_phase8.util.Gender
 
-@Dao
+//@Dao
 interface StudentDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+  /*  @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(student: Student)
 
     @Update
@@ -29,6 +29,6 @@ interface StudentDao {
     fun getStudentsSortByName():List<Student>
 
     @Query("SELECT * FROM students ORDER BY family ASC")
-    fun getStudentsSortByFamily():List<Student>
+    fun getStudentsSortByFamily():List<Student>*/
 
 }

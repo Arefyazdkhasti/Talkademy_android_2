@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.talkademy_phase8.data.entity.Student
 import com.example.talkademy_phase8.data.local.SQLite.DataBaseOpenHelper
 import com.example.talkademy_phase8.databinding.FragmentAddStudentBinding
+import com.example.talkademy_phase8.ui.MainActivity.Companion.backgroundThreadRealm
 import com.example.talkademy_phase8.util.Gender
 import com.example.talkademy_phase8.util.UiUtil.Companion.showToast
 
@@ -30,16 +31,20 @@ class AddStudentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         val safeArgs = arguments?.let { AddStudentFragmentArgs.fromBundle(it) }
         val student = safeArgs?.student
         if (student != null) {
             println(student.nationalCode)
             bindStudent(student)
-            bindUI(true)
+            bindUI(true/*, backgroundThreadRealm*/)
             (activity as? AppCompatActivity)?.supportActionBar?.title = "Update Student"
         } else {
-            bindUI(false)
+            bindUI(false/*, backgroundThreadRealm*/)
         }
+
+
     }
 
     private fun bindStudent(student: Student) {
@@ -57,7 +62,7 @@ class AddStudentFragment : Fragment() {
             binding.femaleRadioBtn.isChecked = true
     }
 
-    private fun bindUI(isLoaded: Boolean) {
+    private fun bindUI(isLoaded: Boolean/*,backgroundThreadRealm:Realm*/) {
         //val studentDatabase = StudentDataBase
         //val dao = studentDatabase.getDatabase(requireContext())
         val openHelper = DataBaseOpenHelper(requireContext())
@@ -78,7 +83,7 @@ class AddStudentFragment : Fragment() {
 
                     if (openHelper.updateStudent(student) != 0) {
                         showToast(requireContext(), "${student.name} ${student.family} updated!")
-                    }else
+                    } else
                         showToast(requireContext(), "Error in updating student")
 
 
