@@ -4,16 +4,22 @@ import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.talkademy_phase8.R
 import com.example.talkademy_phase8.data.entity.Student
 import com.example.talkademy_phase8.data.local.SQLite.DataBaseOpenHelper
+import com.example.talkademy_phase8.data.local.room.StudentDataBase
 import com.example.talkademy_phase8.databinding.StudentItemBinding
 import com.example.talkademy_phase8.ui.framgent.StudentListFragmentDirections
+import com.example.talkademy_phase8.util.DataBase
 import com.example.talkademy_phase8.util.Gender
+import com.example.talkademy_phase8.util.UiUtil.Companion.getPreferredDataBase
 import com.example.talkademy_phase8.util.UiUtil.Companion.showToast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
@@ -28,7 +34,9 @@ class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
         val binding: StudentItemBinding =
             StudentItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return StudentViewHolder(binding)
+
+        val preferredDB = getPreferredDataBase(parent.context as AppCompatActivity)
+        return StudentViewHolder(binding, preferredDB)
     }
 
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
@@ -39,7 +47,8 @@ class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(
 
 
     inner class StudentViewHolder(
-        private val binding: StudentItemBinding
+        private val binding: StudentItemBinding,
+        private val preferredDB: String
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(student: Student) {
@@ -55,13 +64,13 @@ class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(
 
 
             itemView.setOnLongClickListener {
-                showDialog(student,adapterPosition ,itemView.context)
+                showDialog(student, adapterPosition, itemView.context, preferredDB)
                 return@setOnLongClickListener (true)
             }
         }
     }
 
-    private fun showDialog(student: Student, position: Int, context: Context) {
+    private fun showDialog(student: Student, position: Int, context: Context, preferredDB: String) {
         MaterialAlertDialogBuilder(context)
             .setTitle("${student.name} ${student.family}")
             .setMessage("Choose action to do with selected student")
@@ -69,20 +78,22 @@ class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(
                 dialog.dismiss()
             }
             .setNegativeButton("Delete") { dialog, which ->
-                //val studentDatabase = StudentDataBase
-                //val dao = studentDatabase.getDatabase(context)
-                /*GlobalScope.launch {
-                    dao.studentDao().delete(student)
-                }*/
-
-                val openHelper = DataBaseOpenHelper(context)
-
-                openHelper.deleteEmployee(student)
-                showToast(context, "${student.name} deleted!")
+                if (preferredDB == DataBase.Room.name) {
+                    val studentDatabase = StudentDataBase
+                    val dao = studentDatabase.getDatabase(context)
+                    GlobalScope.launch {
+                        dao.studentDao().delete(student)
+                    }
+                    showToast(context, "${student.name} deleted! ROOM")
+                } else {
+                    val openHelper = DataBaseOpenHelper(context)
+                    openHelper.deleteEmployee(student)
+                    showToast(context, "${student.name} deleted! SQLite")
+                }
                 students.removeAt(position)
                 //update list and remove item
                 notifyItemRemoved(position)
-                notifyItemRangeChanged(position,students.size)
+                notifyItemRangeChanged(position, students.size)
 
             }
             .setPositiveButton("Edit") { dialog, which ->

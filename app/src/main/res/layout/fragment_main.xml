@@ -6,24 +6,41 @@
     android:layout_height="match_parent"
     tools:context=".ui.framgent.MainFragment">
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/selected_database"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="35dp"
+        tools:text="Room"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:padding="@dimen/standard_margin"
+        />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/add_student_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/add_student"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.42000002" />
+        app:layout_constraintVertical_bias="0.42000002"
+        android:layout_margin="@dimen/standard_margin"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/show_student_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/show_student"
         app:layout_constraintEnd_toEndOf="@+id/add_student_btn"
         app:layout_constraintStart_toStartOf="@+id/add_student_btn"
-        app:layout_constraintTop_toBottomOf="@+id/add_student_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/add_student_btn"
+        android:layout_margin="@dimen/standard_margin"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

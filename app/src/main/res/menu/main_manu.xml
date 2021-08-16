@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/sqlite_menu"
+        android:title="@string/sqlite" />
+
+    <item
+        android:id="@+id/room_menu"
+        android:title="@string/room" />
+
+</menu>

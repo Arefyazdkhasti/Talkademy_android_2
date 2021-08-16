@@ -24,7 +24,7 @@
         tools:layout="@layout/fragment_add_student" >
         <argument
             android:name="student"
-            app:argType="com.example.talkademy_phase8.data.Student"
+            app:argType="com.example.talkademy_phase8.data.entity.Student"
             app:nullable="true" />
     </fragment>
     <fragment

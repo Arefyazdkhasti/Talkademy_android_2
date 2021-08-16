@@ -11,4 +11,6 @@
     <string name="female">female</string>
     <string name="male">male</string>
     <string name="save">Save</string>
+    <string name="sqlite">SQLite</string>
+    <string name="room">Room</string>
 </resources>
