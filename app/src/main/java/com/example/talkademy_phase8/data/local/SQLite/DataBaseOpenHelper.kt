@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.talkademy_phase8.data.entity.Student
+import com.example.talkademy_phase8.util.Filter
 import com.example.talkademy_phase8.util.Gender
 
 @SuppressLint("Recycle")
@@ -49,9 +50,9 @@ class DataBaseOpenHelper(context: Context) :
         contentValues.put(KEY_NATIONAL_CODE, student.nationalCode)
         contentValues.put(KEY_SCORE, student.score)
         contentValues.put(KEY_GENDER, student.gender.name)
-        var success:Long = 0
+        var success: Long = 0
         if (!checkStudentExists(student.nationalCode)) {
-           success = db.insert(TABLE_NAME, null, contentValues)
+            success = db.insert(TABLE_NAME, null, contentValues)
         }
 
         db.close()
@@ -98,8 +99,47 @@ class DataBaseOpenHelper(context: Context) :
         return cursor.moveToFirst()
     }
 
+    fun getStudents(filter: Filter): List<Student> {
+        val empList = ArrayList<Student>()
+        var selectQuery = "SELECT  * FROM $TABLE_NAME"
 
-    //method to read data
+        when (filter) {
+            Filter.All -> selectQuery = "SELECT  * FROM $TABLE_NAME"
+            Filter.Male -> selectQuery = "SELECT  * FROM $TABLE_NAME WHERE $KEY_GENDER = \"MALE\""
+            Filter.Female -> selectQuery = "SELECT  * FROM $TABLE_NAME WHERE $KEY_GENDER = \"FEMALE\""
+            Filter.Score -> selectQuery = "SELECT  * FROM $TABLE_NAME ORDER BY $KEY_SCORE DESC"
+            Filter.Name -> selectQuery = "SELECT  * FROM $TABLE_NAME ORDER BY $KEY_NAME"
+            Filter.Family -> selectQuery = "SELECT  * FROM $TABLE_NAME ORDER BY $KEY_FAMILY"
+        }
+
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        } catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return ArrayList()
+        }
+        var name: String
+        var family: String
+        var nationalCode: String
+        var score: String
+        var gender: String
+        if (cursor.moveToFirst()) {
+            do {
+                name = cursor.getString(cursor.getColumnIndex(KEY_NAME))
+                family = cursor.getString(cursor.getColumnIndex(KEY_FAMILY))
+                nationalCode = cursor.getString(cursor.getColumnIndex(KEY_NATIONAL_CODE))
+                score = cursor.getString(cursor.getColumnIndex(KEY_SCORE))
+                gender = cursor.getString(cursor.getColumnIndex(KEY_GENDER))
+                val emp = Student(name, family, nationalCode, score, enumValueOf(gender))
+                empList.add(emp)
+            } while (cursor.moveToNext())
+        }
+        return empList
+    }
+
+    /*//method to read data
     fun getAllStudents(): List<Student> {
         val empList = ArrayList<Student>()
         val selectQuery = "SELECT  * FROM $TABLE_NAME"
@@ -249,5 +289,5 @@ class DataBaseOpenHelper(context: Context) :
             } while (cursor.moveToNext())
         }
         return empList
-    }
+    }*/
 }

@@ -1,6 +1,5 @@
 package com.example.talkademy_phase8.ui.framgent
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,20 +13,14 @@ import com.example.talkademy_phase8.data.local.room.StudentDataBase
 import com.example.talkademy_phase8.databinding.FragmentStudentListBinding
 import com.example.talkademy_phase8.ui.adapter.StudentAdapter
 import com.example.talkademy_phase8.util.DataBase
+import com.example.talkademy_phase8.util.Filter
 import com.example.talkademy_phase8.util.Gender
 import com.example.talkademy_phase8.util.UiUtil.Companion.getPreferredDataBase
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-//filters
-private const val ALL = "all"
-private const val MALE = "male"
-private const val FEMALE = "female"
-private const val SCORE = "score"
-private const val NAME = "name"
-private const val FAMILY = "family"
-private const val GENDER = "gender"
+
 
 class StudentListFragment : Fragment() {
 
@@ -59,7 +52,7 @@ class StudentListFragment : Fragment() {
         val dataBaseOpenHelper = DataBaseOpenHelper(requireContext())
 
         if (preferredDB == DataBase.Sqlite.name)
-            setUpRecycler(dataBaseOpenHelper.getAllStudents())
+            setUpRecycler(dataBaseOpenHelper.getStudents(Filter.All))
         else {
             GlobalScope.launch {
                 setUpRecycler((dao.studentDao().getAllStudents()))
@@ -86,7 +79,7 @@ class StudentListFragment : Fragment() {
     }
 
     private fun showFilterDialog(dataBaseOpenHelper: DataBaseOpenHelper,dao:StudentDataBase, preferredDB: String) {
-        val singleItems = arrayOf(ALL, MALE, FEMALE, SCORE, NAME, FAMILY, GENDER)
+        val singleItems = arrayOf(Filter.All.name, Filter.Male.name, Filter.Female.name, Filter.Score.name, Filter.Name.name, Filter.Family.name, Filter.Gender.name)
         val checkedItem = currentFilter
 
         MaterialAlertDialogBuilder(requireContext())
@@ -109,51 +102,50 @@ class StudentListFragment : Fragment() {
         when(preferredDB){
             DataBase.Sqlite.name ->{
                 when (result) {
-                    ALL -> setUpRecycler(dataBaseOpenHelper.getAllStudents())
-                    MALE -> setUpRecycler(dataBaseOpenHelper.getStudentsByGender(Gender.MALE))
-                    FEMALE -> setUpRecycler(dataBaseOpenHelper.getStudentsByGender(Gender.FEMALE))
-                    SCORE -> setUpRecycler(dataBaseOpenHelper.getStudentsByScoreOrder())
-                    NAME -> setUpRecycler(dataBaseOpenHelper.getStudentsByNameOrder())
-                    FAMILY -> setUpRecycler(dataBaseOpenHelper.getStudentsByFamilyOrder())
-                    GENDER -> setUpRecycler(
-                        dataBaseOpenHelper.getStudentsByGender(Gender.FEMALE) +
-                                dataBaseOpenHelper.getStudentsByGender(Gender.MALE)
+                    Filter.All.name -> setUpRecycler(dataBaseOpenHelper.getStudents(Filter.All))
+                    Filter.Male.name -> setUpRecycler(dataBaseOpenHelper.getStudents(Filter.Male))
+                    Filter.Female.name -> setUpRecycler(dataBaseOpenHelper.getStudents(Filter.Female))
+                    Filter.Score.name -> setUpRecycler(dataBaseOpenHelper.getStudents(Filter.Score))
+                    Filter.Name.name -> setUpRecycler(dataBaseOpenHelper.getStudents(Filter.Name))
+                    Filter.Family.name -> setUpRecycler(dataBaseOpenHelper.getStudents(Filter.Family))
+                    Filter.Gender.name -> setUpRecycler(
+                        dataBaseOpenHelper.getStudents(Filter.Female) + dataBaseOpenHelper.getStudents(Filter.Male)
                     )
                 }
             }
             DataBase.Room.name ->{
                 when (result) {
-                    ALL -> {
+                    Filter.All.name -> {
                         GlobalScope.launch {
                             setUpRecycler(dao.studentDao().getAllStudents())
                         }
                     }
-                    MALE -> {
+                    Filter.Male.name -> {
                         GlobalScope.launch {
                             setUpRecycler(dao.studentDao().getStudentsByGender(Gender.MALE))
                         }
                     }
-                    FEMALE -> {
+                    Filter.Female.name -> {
                         GlobalScope.launch {
                             setUpRecycler(dao.studentDao().getStudentsByGender(Gender.FEMALE))
                         }
                     }
-                    SCORE -> {
+                    Filter.Score.name -> {
                         GlobalScope.launch {
                             setUpRecycler(dao.studentDao().getStudentsSortByScore())
                         }
                     }
-                    NAME -> {
+                    Filter.Name.name -> {
                         GlobalScope.launch {
                             setUpRecycler(dao.studentDao().getStudentsSortByName())
                         }
                     }
-                    FAMILY -> {
+                    Filter.Family.name -> {
                         GlobalScope.launch {
                             setUpRecycler(dao.studentDao().getStudentsSortByFamily())
                         }
                     }
-                    GENDER -> {
+                    Filter.Gender.name -> {
                         GlobalScope.launch {
                             setUpRecycler(dao.studentDao().getStudentsByGender(Gender.FEMALE) +
                                     dao.studentDao().getStudentsByGender(Gender.MALE))
@@ -162,41 +154,5 @@ class StudentListFragment : Fragment() {
                 }
             }
         }
-
     }
-    //region room filter implementation
-    /*private fun selectedFilter(, dao: StudentDataBase) {
-        when (result) {
-            "ALl" -> {
-                updateView(dao.studentDao().getAllStudents())
-            }
-            "Male" -> {
-                updateView(dao.studentDao().getStudentsByGender(Gender.MALE))
-            }
-            "Female" -> {
-                updateView(dao.studentDao().getStudentsByGender(Gender.FEMALE))
-            }
-            "Score" -> {
-                updateView(dao.studentDao().getStudentsSortByScore())
-            }
-            "Name" -> {
-                updateView(dao.studentDao().getStudentsSortByName())
-            }
-            "Family" -> {
-                updateView(dao.studentDao().getStudentsSortByFamily())
-            }
-            "Gender" -> {
-                updateView(dao.studentDao().getStudentsByGender(Gender.FEMALE) + dao.studentDao().getStudentsByGender(Gender.MALE))
-            }
-        }
-    }
-
-    private fun updateView(list: List<Student>) {
-        GlobalScope.launch {
-            setUpRecycler(
-                list
-            )
-        }
-    }*/
-    //endregion
 }
